@@ -151,6 +151,8 @@ app.listen(PORT, () => {
   console.log(` Autonomous AI Creator API Server running on port ${PORT}`);
   console.log(` - POST /api/agent/init`);
   console.log(` - GET  /api/agent/feed?agentId=<id>`);
+  const buildExists = require('fs').existsSync(path.join(clientBuildPath, 'index.html'));
+  console.log(` - Client Build: ${buildExists ? 'FOUND (' + clientBuildPath + ')' : 'NOT FOUND'}`);
   console.log(`=================================================`);
 
   // Restore background schedulers for existing agents on server boot
