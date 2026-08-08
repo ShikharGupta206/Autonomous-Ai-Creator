@@ -9,14 +9,33 @@ const PRESETS = [
 ];
 
 export default function InitAgentModal({ isOpen, onClose, onInitAgent }) {
-  const [selectedPreset, setSelectedPreset] = useState(PRESETS[0]);
-  const [customName, setCustomName] = useState('');
-  const [customDomain, setCustomDomain] = useState('');
-  const [isCustom, setIsCustom] = useState(false);
-  const [intervalMinutes, setIntervalMinutes] = useState(2);
-  const [submitting, setSubmitting] = useState(false);
+  const [selectedPreset, setSelectedPreset] = React.useState(PRESETS[0]);
+  const [customName, setCustomName] = React.useState('');
+  const [customDomain, setCustomDomain] = React.useState('');
+  const [isCustom, setIsCustom] = React.useState(false);
+  const [intervalMinutes, setIntervalMinutes] = React.useState(2);
+  const [submitting, setSubmitting] = React.useState(false);
+
+  // Reset form inputs whenever modal opens or closes
+  React.useEffect(() => {
+    if (isOpen) {
+      setSelectedPreset(PRESETS[0]);
+      setCustomName('');
+      setCustomDomain('');
+      setIsCustom(false);
+      setIntervalMinutes(2);
+      setSubmitting(false);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
+
+  const handleClose = () => {
+    setCustomName('');
+    setCustomDomain('');
+    setIsCustom(false);
+    onClose();
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,6 +46,9 @@ export default function InitAgentModal({ isOpen, onClose, onInitAgent }) {
 
     await onInitAgent({ name, domain }, intervalMinutes);
     setSubmitting(false);
+    setCustomName('');
+    setCustomDomain('');
+    setIsCustom(false);
     onClose();
   };
 
@@ -37,7 +59,7 @@ export default function InitAgentModal({ isOpen, onClose, onInitAgent }) {
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'rgba(0, 0, 0, 0.75)',
+      background: 'rgba(15, 23, 42, 0.4)',
       backdropFilter: 'blur(8px)',
       display: 'flex',
       alignItems: 'center',
@@ -45,21 +67,21 @@ export default function InitAgentModal({ isOpen, onClose, onInitAgent }) {
       zIndex: 1000,
       padding: '20px'
     }}>
-      <div className="glass-panel" style={{ width: '100%', maxWidth: '540px', padding: '28px', borderRadius: '20px', background: '#0f172a' }}>
+      <div className="glass-panel" style={{ width: '100%', maxWidth: '540px', padding: '28px', borderRadius: '16px', background: 'var(--bg-card)', boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.3)', border: '1px solid var(--bg-card-border)' }}>
         {/* Modal Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Bot size={24} color="#06b6d4" />
-            <h2 style={{ fontSize: '18px', fontWeight: 700 }}>Initialize Autonomous AI Agent</h2>
+            <Bot size={24} color="var(--accent-cyan)" />
+            <h2 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text-primary)' }}>Initialize Autonomous AI Agent</h2>
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>
+          <button onClick={handleClose} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
             <X size={20} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit}>
           {/* Preset Selector */}
-          <label style={{ fontSize: '13px', fontWeight: 600, color: '#94a3b8', display: 'block', marginBottom: '10px' }}>
+          <label style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-secondary)', display: 'block', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             SELECT PERSONA ARCHETYPE:
           </label>
 
@@ -74,20 +96,20 @@ export default function InitAgentModal({ isOpen, onClose, onInitAgent }) {
                   style={{
                     padding: '14px',
                     borderRadius: '12px',
-                    border: '1px solid ' + (active ? '#06b6d4' : 'rgba(255, 255, 255, 0.08)'),
-                    background: active ? 'rgba(6, 182, 212, 0.12)' : 'rgba(255, 255, 255, 0.03)',
+                    border: '1px solid ' + (active ? 'var(--accent-cyan)' : 'var(--bg-card-border)'),
+                    background: active ? 'var(--accent-cyan-glow)' : 'var(--bg-dark)',
                     cursor: 'pointer',
                     transition: 'all 0.2s ease'
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, color: '#f8fafc', fontSize: '14px' }}>
-                      <Icon size={16} color={active ? '#06b6d4' : '#94a3b8'} />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, color: 'var(--text-primary)', fontSize: '14px' }}>
+                      <Icon size={16} color={active ? 'var(--accent-cyan)' : 'var(--text-muted)'} />
                       <span>{preset.name}</span>
                     </div>
-                    {active && <Check size={14} color="#06b6d4" />}
+                    {active && <Check size={14} color="var(--accent-cyan)" />}
                   </div>
-                  <div style={{ fontSize: '12px', color: '#94a3b8' }}>{preset.domain}</div>
+                  <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{preset.domain}</div>
                 </div>
               );
             })}
@@ -95,12 +117,12 @@ export default function InitAgentModal({ isOpen, onClose, onInitAgent }) {
 
           {/* Custom Persona Toggle */}
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#e2e8f0', cursor: 'pointer' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 600 }}>
               <input
                 type="checkbox"
                 checked={isCustom}
                 onChange={(e) => setIsCustom(e.target.checked)}
-                style={{ accentColor: '#06b6d4' }}
+                style={{ accentColor: 'var(--accent-cyan)' }}
               />
               <span>Define Custom Persona & Identity</span>
             </label>
@@ -116,9 +138,9 @@ export default function InitAgentModal({ isOpen, onClose, onInitAgent }) {
                   style={{
                     padding: '10px 14px',
                     borderRadius: '8px',
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    color: '#fff',
+                    background: 'var(--bg-dark)',
+                    border: '1px solid var(--bg-card-border)',
+                    color: 'var(--text-primary)',
                     outline: 'none',
                     fontSize: '13px'
                   }}
@@ -132,9 +154,9 @@ export default function InitAgentModal({ isOpen, onClose, onInitAgent }) {
                   style={{
                     padding: '10px 14px',
                     borderRadius: '8px',
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    color: '#fff',
+                    background: 'var(--bg-dark)',
+                    border: '1px solid var(--bg-card-border)',
+                    color: 'var(--text-primary)',
                     outline: 'none',
                     fontSize: '13px'
                   }}
@@ -145,7 +167,7 @@ export default function InitAgentModal({ isOpen, onClose, onInitAgent }) {
 
           {/* Autonomous Publishing Interval */}
           <div style={{ marginBottom: '24px' }}>
-            <label style={{ fontSize: '13px', fontWeight: 600, color: '#94a3b8', display: 'block', marginBottom: '6px' }}>
+            <label style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-secondary)', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               AUTONOMOUS PUBLISHING CYCLE INTERVAL:
             </label>
             <select
@@ -155,17 +177,17 @@ export default function InitAgentModal({ isOpen, onClose, onInitAgent }) {
                 width: '100%',
                 padding: '10px 14px',
                 borderRadius: '8px',
-                background: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                color: '#fff',
+                background: 'var(--bg-dark)',
+                border: '1px solid var(--bg-card-border)',
+                color: 'var(--text-primary)',
                 fontSize: '13px',
                 outline: 'none'
               }}
             >
-              <option value={1} style={{ background: '#0f172a' }}>1 Minute (Fast evaluation demo mode)</option>
-              <option value={2} style={{ background: '#0f172a' }}>2 Minutes (Default recommended)</option>
-              <option value={5} style={{ background: '#0f172a' }}>5 Minutes</option>
-              <option value={15} style={{ background: '#0f172a' }}>15 Minutes</option>
+              <option value={1} style={{ background: 'var(--bg-card)', color: 'var(--text-primary)' }}>1 Minute (Fast evaluation demo mode)</option>
+              <option value={2} style={{ background: 'var(--bg-card)', color: 'var(--text-primary)' }}>2 Minutes (Default recommended)</option>
+              <option value={5} style={{ background: 'var(--bg-card)', color: 'var(--text-primary)' }}>5 Minutes</option>
+              <option value={15} style={{ background: 'var(--bg-card)', color: 'var(--text-primary)' }}>15 Minutes</option>
             </select>
           </div>
 

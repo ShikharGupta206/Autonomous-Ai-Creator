@@ -1,7 +1,7 @@
 {
   "name": "autonomous-ai-creator",
   "version": "1.0.0",
-  "description": "Autonomous AI & Technology Persona Creator",
+  "description": "Autonomous AI & Technology Persona Creator Feed Engine",
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
@@ -9,7 +9,7 @@
     "dev:client": "cd client && npm run dev",
     "build:client": "cd client && npm run build",
     "build": "cd client && npm run build",
-    "test": "node server/tests/test-api.js"
+    "test": "node server/tests/full-production-suite.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",

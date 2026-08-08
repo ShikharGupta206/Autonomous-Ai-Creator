@@ -30,6 +30,17 @@ app.post('/api/agent/init', async (req, res) => {
       return res.status(400).json({ error: 'Invalid persona payload. "name" is required.' });
     }
 
+    // Prevent duplicate agents with same name or domain
+    const existingAgents = store.getAllAgents();
+    const existing = existingAgents.find(a =>
+      a.persona.name.toLowerCase() === persona.name.toLowerCase() ||
+      (persona.domain && a.persona.domain.toLowerCase() === persona.domain.toLowerCase())
+    );
+
+    if (existing) {
+      return res.status(200).json({ agentId: existing.id });
+    }
+
     const agentId = `agent-${uuidv4().substring(0, 8)}`;
     const intervalMs = (intervalMinutes || 2) * 60 * 1000; // Default 2 minutes interval
 

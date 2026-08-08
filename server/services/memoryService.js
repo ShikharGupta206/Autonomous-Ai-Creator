@@ -6,7 +6,28 @@ const store = require('../data/store');
  */
 
 function getMemory(agentId) {
-  return store.getAgentMemory(agentId);
+  const memory = store.getAgentMemory(agentId);
+  const feed = store.getFeed(agentId);
+
+  if (!memory.publishedTopics) memory.publishedTopics = [];
+  if (!memory.concepts) memory.concepts = [];
+  if (!memory.sourceHistory) memory.sourceHistory = [];
+
+  const existingTitles = new Set(memory.publishedTopics.map(t => (t.title || t).toLowerCase()));
+  
+  feed.forEach(p => {
+    if (!p.text) return;
+    const titleMatch = p.text.match(/"([^"]+)"/);
+    if (titleMatch && titleMatch[1]) {
+      const titleLower = titleMatch[1].toLowerCase();
+      if (!existingTitles.has(titleLower)) {
+        memory.publishedTopics.push({ title: titleMatch[1] });
+        existingTitles.add(titleLower);
+      }
+    }
+  });
+
+  return memory;
 }
 
 function recordPublication(agentId, post, candidateTopic, extractedConcepts = []) {
